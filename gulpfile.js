@@ -14,14 +14,14 @@ let svgstore = require(`gulp-svgstore`);
 let webp = require(`gulp-webp`);
 let posthtml = require(`gulp-posthtml`);
 let include = require(`posthtml-include`);
-
+let babel = require(`gulp-babel`);
 let sass = require(`gulp-sass`);
 let postcss = require(`gulp-postcss`);
 let autoprefixer = require(`autoprefixer`);
 let csso = require(`gulp-csso`);
-
+let rollup = require(`gulp-better-rollup`);
 let uglify = require(`gulp-terser`);
-
+let babel = require(`gulp-babel`);
 let server = require(`browser-sync`).create();
 
 gulp.task(`clean`, function () {
@@ -110,11 +110,14 @@ gulp.task(`js-vendor`, function () {
 
 gulp.task(`js`, function () {
   return gulp.src([
-    `source/js/modules/*.js`,
+    `source/js/main.js`,
   ])
     .pipe(plumber())
     .pipe(sourcemap.init())
-    .pipe(concat(`script.js`))
+    .pipe(rollup({}, `iife`))
+    .pipe(babel({
+        presets: ['@babel/env']
+    }))
     .pipe(gulp.dest(`build/js`))
     .pipe(uglify())
     .pipe(rename({
